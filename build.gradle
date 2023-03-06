@@ -1,0 +1,53 @@
+plugins {
+    id 'java'
+    id 'application'
+    id 'org.openjfx.javafxplugin' version '0.0.13'
+    id 'org.beryx.jlink' version '2.25.0'
+}
+
+group 'dev.turtywurty'
+version '1.0-SNAPSHOT'
+
+repositories {
+    mavenCentral()
+}
+
+sourceCompatibility = '19'
+targetCompatibility = '19'
+
+tasks.withType(JavaCompile) {
+    options.encoding = 'UTF-8'
+}
+
+application {
+    mainModule = 'dev.turtywurty.turtyterminal'
+    mainClass = 'dev.turtywurty.turtyterminal.Startup'
+}
+
+javafx {
+    version = '19'
+    modules = ['javafx.controls', 'javafx.fxml']
+}
+
+dependencies {
+    implementation('org.controlsfx:controlsfx:11.1.2')
+    implementation('com.dlsc.formsfx:formsfx-core:11.5.0') {
+        exclude(group: 'org.openjfx')
+    }
+    implementation('net.synedra:validatorfx:0.4.0') {
+        exclude(group: 'org.openjfx')
+    }
+    implementation('org.kordamp.ikonli:ikonli-javafx:12.3.1')
+}
+
+jlink {
+    imageZip = project.file("${buildDir}/distributions/app-${javafx.platform.classifier}.zip")
+    options = ['--strip-debug', '--compress', '2', '--no-header-files', '--no-man-pages']
+    launcher {
+        name = 'app'
+    }
+}
+
+jlinkZip {
+    group = 'distribution'
+}
