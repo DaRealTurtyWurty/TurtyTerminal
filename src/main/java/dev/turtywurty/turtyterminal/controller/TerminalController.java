@@ -26,6 +26,7 @@ public class TerminalController {
         this.terminalTabController.control(this.view.getFileMenu(), this.view.getTerminalTabPane());
 
         this.view.getTerminalTabPane().getSelectionModel().selectedItemProperty().addListener((observable, oldValue, newValue) -> {
+            if(newValue != null) {
                 Node content = newValue.getContent();
                 if(content instanceof TerminalTab.TerminalTabContent terminalTabContent) {
                     terminalTabContent.getTextArea().setOnKeyReleased(event -> {
