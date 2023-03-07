@@ -25,15 +25,27 @@ public class TerminalController {
         this.view = view;
         this.terminalTabController.control(this.view.getFileMenu(), this.view.getTerminalTabPane());
 
-        Node content = this.view.getTerminalTabPane().getSelectionModel().getSelectedItem().getContent();
-        if(content instanceof TerminalTab.TerminalTabContent terminalTabContent) {
-            terminalTabContent.getTextArea().setOnKeyReleased(event -> {
-                if(event.getCode() == KeyCode.ENTER) {
-                    String[] lines = terminalTabContent.getTextArea().getText().split("\n");
-                    runCommand(lines[lines.length - 1].trim(), terminalTabContent.getTextArea());
+        this.view.getTerminalTabPane().getSelectionModel().selectedItemProperty().addListener((observable, oldValue, newValue) -> {
+                Node content = newValue.getContent();
+                if(content instanceof TerminalTab.TerminalTabContent terminalTabContent) {
+                    terminalTabContent.getTextArea().setOnKeyReleased(event -> {
+                        if(event.getCode() == KeyCode.ENTER) {
+                            String[] lines = terminalTabContent.getTextArea().getText().split("\n");
+                            runCommand(lines[lines.length - 1].trim(), terminalTabContent.getTextArea());
+                        }
+                    });
+
+                    terminalTabContent.getTextArea().textProperty().addListener((observable1, oldValue1, newValue1) -> {
+                        if(newValue1 != null && !newValue1.isEmpty()) {
+                            System.out.println("Scrolling to bottom");
+                            terminalTabContent.getTextArea().setScrollTop(Double.MAX_VALUE);
+                        }
+                    });
                 }
-            });
-        }
+            }
+        });
+
+        this.view.getTerminalTabPane().getSelectionModel().select(0);
     }
 
     private void runCommand(String command, TextArea textArea) {
